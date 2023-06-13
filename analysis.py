@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+step_block_size = 15000
+
 
 def load_data(file_name):
     """
@@ -14,7 +16,9 @@ def load_data(file_name):
     data = dataframe.to_numpy()
     data_header = dataframe.columns.to_numpy()[3:-1]
     data_entries = data[3:, 3:-1]
-    filter_places = ["H+_int_(pH_int)", "CA9", "O2_inverse", "O2"]
+    # filter_places = ["H+_int_(pH_int)", "CA9", "O2_inverse", "O2", "H+_ext_(pH_ext)"]
+    # filter_places = ["H+_int_(pH_int)", "CA9", "O2", "H+_ext_(pH_ext)"]
+    filter_places = ["H+_int_(pH_int)", "CA9", "O2"]
     filter_indeces = []
     for i, place in enumerate(data_header):
         if place in filter_places:
@@ -33,11 +37,14 @@ def plot_save_data(file_name, labels, traces):
     :return:
     """
     plt.figure(figsize=(10, 6))
-    for i, label in enumerate(labels):
-        plt.plot(traces[:, i], label=label)
-    plt.vlines(x=0, ymin=0, ymax=np.max(traces), linestyles="--", colors="0", label="$O_2$ = 2")
-    plt.vlines(x=6000, ymin=0, ymax=np.max(traces), linestyles="--", colors="0.4", label="$O_2$ = 0")
-    plt.vlines(x=12000, ymin=0, ymax=np.max(traces), linestyles="--", colors="0.7", label="$O_2$ = 2")
+    for i, trace_label in enumerate(labels):
+        print(trace_label)
+        plt.plot(traces[:, i], label=trace_label)
+
+    oxygen_vals = np.flip(np.arange(0, 2.5, 0.5))
+    for i, o_val in enumerate(oxygen_vals):
+        plt.vlines(x=(i / len(oxygen_vals)) * traces.shape[0], ymin=0, ymax=np.max(traces), linestyles="--",
+                   label=str(o_val), colors=str(i / len(oxygen_vals)))
     plt.xlabel("Simulation Steps")
     plt.ylabel("Number of Tokens")
     plt.legend()
@@ -46,6 +53,6 @@ def plot_save_data(file_name, labels, traces):
     plt.show()
 
 
-file_name = "oxygen_2_0_2_transcription_0.1"
+file_name = "oxygen_sweep"
 place_names, place_traces = load_data(file_name + ".csv")
 plot_save_data(file_name=file_name + ".png", labels=place_names, traces=place_traces)

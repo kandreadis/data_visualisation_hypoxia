@@ -73,7 +73,7 @@ def plot_save_data(file_name, labels, traces, oxygen_phases, oxygen_vals):
     plt.legend()
     file_loc = "figures/" + file_name
     plt.savefig(file_loc, dpi=300)
-    plt.show()
+    plt.close()
 
 
 oxygen_phases = True
@@ -85,10 +85,13 @@ data_dict = {
     "anaerobic": ["anaerobic", np.array([1, 0.9, 0.8, 0.7, 0.6]), ["H+_int_(pH_int)", "CA9"]],
     "inhibited_CA9_translation_sweep": [True, oxygen_vals, ["H+_int_(pH_int)", "CA9", "O2"]],
     "memory_effect": [True, hypox_normox_hypox, ["H+_int_(pH_int)", "CA9", "O2"]],
-    "intermediate": [False, None, ["H+_int_(pH_int)", "CA9", "O2"]]
+    "intermediate_1": [False, None, ["H+_int_(pH_int)", "CA9", "O2"]],
+    "intermediate_1.1": [False, None, ["H+_int_(pH_int)", "CA9"]],
+    "hypoxia_long_experimental": [False, None, ["H+_int_(pH_int)", "CA9"]]
 }
-
+print("Starting processing ...")
 for data in data_dict:
     place_names, place_traces = load_data(data + ".csv", filter_places=data_dict[data][2])
     plot_save_data(file_name=data + ".png", labels=place_names, traces=place_traces, oxygen_phases=data_dict[data][0],
                    oxygen_vals=data_dict[data][1])
+print("Finished visualisation of", len(data_dict), ".csv spreadsheets.")
